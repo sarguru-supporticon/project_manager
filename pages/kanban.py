@@ -1,3 +1,4 @@
+import html
 import streamlit as st
 from utils.database import get_tasks, get_all_projects, update_task_status
 
@@ -68,17 +69,19 @@ def show():
             for t in col_tasks:
                 pc = priority_colors.get(t['priority'], '#667eea')
                 pi = priority_icons.get(t['priority'], '⚪')
-                due_str = f"📅 {t['due_date']}" if t['due_date'] else ""
+                due_str = f"📅 {html.escape(t['due_date'])}" if t['due_date'] else ""
+                safe_title = html.escape(t['title'])
+                safe_assignee = html.escape(t['assignee_name']) if t['assignee_name'] else ''
 
                 st.markdown(f"""
                 <div style="background:#fff;border-radius:8px;padding:12px;margin-bottom:8px;
                             box-shadow:0 2px 6px rgba(0,0,0,0.08);border-left:3px solid {pc};">
                     <div style="font-weight:600;color:#1e293b;font-size:0.9rem;margin-bottom:6px;">
-                        {t['title']}
+                        {safe_title}
                     </div>
                     <div style="font-size:11px;color:#64748b;margin-bottom:6px;">
                         {pi} {t['priority'].upper()} &nbsp;
-                        {'·&nbsp; 👤 ' + t['assignee_name'] if t['assignee_name'] else ''}
+                        {'·&nbsp; 👤 ' + safe_assignee if safe_assignee else ''}
                     </div>
                     {f'<div style="font-size:11px;color:#94a3b8;">{due_str}</div>' if due_str else ''}
                 </div>
